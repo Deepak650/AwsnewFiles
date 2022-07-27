@@ -1,0 +1,51 @@
+JFrog Artifactory Setup
+
+Step 1: An AWS T2.small EC2 instance (Linux)
+Step 2: Open port 8081 and 8082 in the security group
+Step 3: sudo su - Install Java 
+Step 4: cd /opt 
+Step 5: wget https://jfrog.bintray.com/artifactory/jfrog-artifactory-oss-6.9.6.zip
+Step 6: unzip jfrog-artifactory-oss-6.9.6.zip
+Step 7: cd /opt/jfrog-artifactory-oss-6.9.6/bin
+        ./artifactory.sh start
+Step 8: http://<PUBLIC_IP_Address>:8081
+Step 9: username: admin
+        password: password
+Step 10: to Stop
+         ./artifactory.sh stop
+Step 11: Set Admin Password
+Step 12: Skip the proxy server
+Step 13: Select maven because we use maven project right now so and Create ..5 repository will be created and finish
+
+JFrog Artifactory integrate with Jenkins Server
+
+Step 1: Create a aws ec2 instance for Artifactory Server and Jenkins Server
+Step 2: Goto Jenkins Server and Install "Artifactory" plug-in
+        Manage Jenkins -> Jenkins Plugins -> available -> artifactory
+Step 3: Configure Artifactory server credentials
+        Manage Jenkins -> Configure System -> Artifactory
+        Add Artifactory Servers
+        Server ID : Artifactory-Server
+        URL : Artifactory Server URL( till Artifactory we need to give ex:8081/artifactory/)
+        Create seperate user is best pratice
+        Click on admin, select the users
+        Click on new ,give username , email id 
+        Check the Admin Privileges
+        Set the password and save it
+        Username : give user username
+        Password : give user password
+        Click on Test Connection (found) and apply , save
+Step 4: Create a new Maven job
+        Job Name : artifactory-project
+Step 5: Source code management
+        Git URL : get URL
+Step 6: Build Environment
+        Resolve artifacts from Artifactory : <provide Artifactory server and repository details>
+Step 7: Build - Goals: clean install
+Step 8: Post-build Actions
+        Deploy Artifacts to Artifactory
+        click on Refresh Repositiories
+        give requied one
+Step 9: Apply and save it
+Step 10: Click on build
+Step 11: check the Artifactory server

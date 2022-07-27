@@ -1,0 +1,29 @@
+for install one software
+---
+-
+ become: true
+ hosts: demo
+ name: "my playbook"
+ tasks:
+   -
+    name: "Install git"
+    yum:
+      name: git
+      state: latest
+
+
+for install multiple software
+---
+-
+ become: true
+ hosts: demo
+ name: "my playbook"
+ tasks:
+   -
+    name: Package installation
+    yum:
+      name: 
+        - git
+        - java
+        - maven
+      state: latest

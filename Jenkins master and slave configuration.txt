@@ -1,0 +1,106 @@
+Jenkins Master and Slave Configuration
+
+Prerequisites:
+Master and slave should have
+same Java version
+Same Maven version
+In case Jave or Maven paths are referring to the agent system then aline it according to masters Global Tool Configuration
+In case the case of the AWS server make sure your Jenkins URL should be updated to the latest Public IP.
+
+Step 1: Create aws ec2 instance of Jenkins server
+        Slave server with Java installation
+Step 2: Goto Jenkins Server 
+        Goto Manage Nodes
+        Manage Jenkins --> Manage Nodes and Clouds --> New Node
+        Add the node name and check the Permanent Agent
+Step 3: Provide below information to add Jenkins agent
+        Name: Build_node_1
+        Description: This node helps to build java application
+        Number of executors: 2
+        Remote root directory: /home/ec2-user/maven-agent
+        Labels: java_node
+        Usage: Use this node as much as possible
+        Launch method: Launch agent by connecting it to the controller
+        Custom WorkDir path: disable
+        Use WebSocket [x]: disable
+        Availability: Keep this agent online as much as possible
+        Save it
+        Click on x mark
+        Copy the agent command line
+        Download agent.jar file
+        Goto the path agent.jar file and execute the agent command
+Step 4: Once you save above configuration you will get a command which should be executed in the agent. it contains agent.jar, a secret-file, and a jnlp file
+        echo "secret_key" > secret-file
+        java -jar agent.jar -jnlpUrl http://<Jenkins_URL>/computer/abc/jenkins-agent.jnlp -secret @secret-file -workDir "/home/ec2-user"
+Step 5: Once connected you can create or edit a job to chose this option in the Restrict where this project can be run
+Step 6: Create a project
+Step 7: Check the Restrict where this project can be run
+        Label name: java_node
+Step 8: Apply and save it
+Step 9: Build now
+
+
+JenkinsFile to Build and Push Docker Images
+
+Step 1: Create aws ec2 instance of Jenkins server
+Step 2: Goto Dockerhub website and login
+Step 3: Goto Account Settings, sercurity,click on new access token
+Step 4: Give access token des and click on generate and copy the password
+Step 5: Goto jenkins, manage jenkins click on manage Credentials
+        Credentials > System > Global Credentials > Add Credentials
+        username: give username
+        Passwrod: paste the password
+        ID: dockerhub_user
+        Click ok
+Step 6: Goto Manage jenkins ,manage plugins, install pipeline
+        Manage Jenkins > Manage Plugins > Available > docker
+        Manage Jenkins > Manage Plugins > Available > docker-build-step
+        Manage Jenkins > Manage Plugins > Available > CloudBees Docker Build and Publish
+Step 7: Create pipeline project
+Step 8: In pipeline add the script
+        pipeline {
+    agent any 
+    environment {
+    DOCKERHUB_CREDENTIALS = credentials('valaxy-dockerhub')
+    }
+    stages { 
+        stage('SCM Checkout') {
+            steps{
+            git 'https://github.com/ravdy/nodejs-demo.git'
+            }
+        }
+
+        stage('Build docker image') {
+            steps {  
+                sh 'docker build -t valaxy/nodeapp:$BUILD_NUMBER .'
+            }
+        }
+        stage('login to dockerhub') {
+            steps{
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage('push image') {
+            steps{
+                sh 'docker push valaxy/nodeapp:$BUILD_NUMBER'
+            }
+        }
+}
+post {
+        always {
+            sh 'docker logout'
+        }
+    }
+}
+
+        
+Step 9: Apply and save , Click on Build now
+Step 10: Before Build now Check the server that docker and jenkins are running
+         service docker start
+         service docker status
+         same for jenkins
+
+
+
+
+

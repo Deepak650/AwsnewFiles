@@ -1,0 +1,108 @@
+Setup SonarQube on Aws
+
+Step 1: Create a aws ec2 instance and give inbound 9000 port no in sercuity group
+Step 2:  sudo su - (install java 11 )
+Step 3: SonarQube cannot be run as root on Unix-based systems, so create a dedicated user account for SonarQube if necessary.
+Step 4: Download latest version (community) copy the link address 
+Step 5: run cd /opt 
+Step 6: wget paste link address
+Step 7: unzip /opt/sonarqube-8.9.2.46101.zip
+Step 8: Change ownershipt to the user and Switch to Linux binaries directory to start service
+        useradd sonaradmin
+        id sonaradmin
+        chown -R sonaradmin:sonaradmin /opt/sonarqube-8.9.2.46101
+        cd /opt/sonarqube-8.9.2.46101/bin/linux-x86-64   
+        ./sonar.sh start
+        ./sonar.sh status
+        sudo su - sonaradmin
+        cd /opt/sonarqube-8.9.2.46101/bin/linux-x86-64
+        ls -ld /opt/sonarqube-8.9.2.46101/
+        goto root
+        cd /opt/sonarqube-8.9.2.46101/bin/linux-x86-64
+        chmod -R 777 /opt/sonarqube-8.9.2.46101/
+        sudo su - sonaradmin
+        cd /opt/sonarqube-8.9.2.46101/bin/linux-x86-64
+        ./sonar.sh start
+        ./sonar.sh status
+        
+Step 9: Connect to the SonarQube server through the browser. It uses port 9000.
+        http://<Public-IP>:9000
+        username:admin
+        password:admin
+Step 10: Stop SonarQube server
+         cd /opt/sonarqube-x.x/bin/linux-x86-64 
+         ./sonar.sh stop
+
+
+Integrate SonarQube With Jenkins
+
+Step 1: Create a aws ec2 instance for Sonarqube Server and Jenkins Server
+Step 2: On SonarQube Server
+        Generate a sonarqube token to authenticate from Jenkins
+        add project manually
+        project key:
+        Display name:
+        click on setup
+        provide a token (generate a token) click on generate and continoue
+        click on maven
+        copy the full code
+        
+Step 3: Goto jenkins Server
+Step 4: Goto Manage jenkins ,click on manage plugins
+Step 5: Sonarcube Scanner install
+Step 6: Goto new item click on maven project
+Step 7: Give git url (javalogin app) copy the code in git and paste it
+Step 8: Goto build in Goals and option paste the full code in SonarQube Server
+Step 9: Add the package before the code and Delete the slash,maven and save it
+Step 10: Build now and after success click on the url for code Analysis
+Step 11: Goto Quality Profile select java as default (because code is written in java lang)
+Step 12: Goto new item click on pipeline project
+Step 13: give the code in the pipeline Script
+         pipeline{
+    agent any
+    environment {
+        PATH = "$PATH:/opt/apache-maven-3.8.2/bin"
+    }
+    stages{
+       stage('GetCode'){
+            steps{
+                git 'https://github.com/ravdy/javaloginapp.git'
+            }
+         }        
+       stage('Build'){
+            steps{
+                sh 'mvn clean package'
+            }
+         }
+        stage('SonarQube analysis') {
+//    def scannerHome = tool 'SonarScanner 4.0';
+        steps{
+        withSonarQubeEnv('sonarqube-8.9') { 
+        // If you have configured more than one global server connection, you can specify its name
+//      sh "${scannerHome}/bin/sonar-scanner"
+        sh "mvn sonar:sonar"
+    }
+        }
+        }
+       
+    }
+}
+Step 14: Goto Manage jenkins ,click on configure System
+Step 15: Goto SonarQube Server, Add SonarQube
+         Name: sonarqube-8.9
+         url : sonarqube server url:9000/
+         server authentication token ,add jenkins
+         kind : Secret text
+         secret: given token no
+         id: sonar-token
+         des: same
+Step 16: Click on add ,select the sonar-token,save it
+Step 17: Goto global tool Config
+         goto SonarQube Scanner click on it
+         Name: sonarscanner
+         apply and save it
+Step 18: Goto project and click on build
+
+
+
+

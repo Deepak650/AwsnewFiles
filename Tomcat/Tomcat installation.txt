@@ -1,0 +1,59 @@
+Tomcat server install manually
+
+step 1: sudo yum -y update
+step 2: sudo amazon-linux-extras install java-openjdk11
+step 3: java -version
+step 4: sudo su -
+step 5: install tomcat goto tomcat server website.
+        copy link address (wget paste link address)
+step 6: run ls
+step 7: tar -xvzf  paste apache-tomcat
+step 8: run readlink -f $(which java)
+step 9: run sudo nano /etc/systemd/system/tomcat.service
+step 10: paste below command and edit java_home
+[Unit]
+Description=Apache Tomcat Web Application Container
+After=network.target
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=tomcat
+Group=tomcat
+Environment="JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.13.0.8-1.amzn2.0.3.x86_64/bin/java"
+Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom -Djava.awt.headless=true"
+Environment="CATALINA_BASE=/opt/tomcat"
+Environment="CATALINA_HOME=/opt/tomcat"
+Environment="CATALINA_PID=/opt/tomcat/temp/tomcat.pid"
+Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+ExecStart=/opt/tomcat/bin/startup.sh
+ExecStop=/opt/tomcat/bin/shutdown.sh
+[Install]
+WantedBy=multi-user.target
+
+step 11: cd apache-tomcat
+step 12: cd bin
+step 13: ./startup.sh
+step 14: check apache tomcat working or not
+
+
+Add user in tomcat
+step 1: run find / -name context.xml
+step 2: edit host-manger and manager context.xml
+step 3: comment the valves in both
+step 4:goto conf and goto tomcat-users.xml
+step 5: edit and paste
+        <role rolename="admin-gui,manager-gui"/>
+<user username="deepak" password="deepak1234" roles="manager-gui,admin-gui"/>
+
+
+Tomcat server install using docker
+
+step 1:Create tomcat container and images using docker
+step 2:use the commnad usermod -aG docker ec2-user and sudo su ec2-user
+step 3:run sudo service docker start
+step 4:run docker exec -it tomcat-container /bin/bash
+step 5:goto webapp.dist folder copy all the folder inside using this command(cp -r ./* /usr/local/tomcat/webapps)
+step 6:after that all folder in webapps.dist is copied into the webapps folder
+step 7:goto conf and server.xml change port no if needed
+step 8: goto bin and run startup.sh
+step 9: check working or not

@@ -1,0 +1,17 @@
+---
+- hosts: slave
+  tasks:
+  - name: Stop the running container
+    command: docker stop tomcat-container
+    ignore_errors: True
+
+  - name: remove the running container
+    command: docker rm tomcat-container
+    ignore_errors: True
+
+  - name: remove the running image
+    command: docker rmi tomcat
+    ignore_errors: True
+
+  - name: create and run container
+    command: sudo docker run -d -p 8090:8080 --name tomcat-container tomcat:latest

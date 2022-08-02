@@ -1,0 +1,45 @@
+
+Step 1: Github
+Step 2: Maven intergation
+Step 3: Deploy to container
+Step 4: publish over ssh
+Step 5:
+Step 6:/var/lib/jenkins/workspace/Deployment/target
+Step 7:sudo yum update
+
+sudo amazon-linux-extras install epel
+Step 8: vi /etc/hostname
+        init 6
+Step 9:
+
+ <role rolename="manager-gui"/>
+ <role rolename="manager-script"/>
+ <role rolename="manager-jmx"/>
+ <role rolename="manager-status"/>
+ <user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>
+ <user username="deployer" password="deployer" roles="manager-script"/>
+ <user username="tomcat" password="s3cret" roles="manager-gui"/>
+Step 10:
+Step 11:
+Step 12:find / -name context.xml
+ 
+Step 13:
+Step 14:
+Step 15:usermod -aG docker ec2-user
+sudo su ec2-user
+
+
+
+
+Integrate Tomcat with Jenkins
+Step 16: install deploy to conatiner in jenkins
+Step 17: goto to manage credentials
+Step 18: click on jenkins,click on  global credentials
+Step 19: click on add new credentials
+         select username with password
+         username:deployer
+         password:deployer
+         id:Tomcat-deployer
+
+
+

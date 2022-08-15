@@ -1,0 +1,43 @@
+Create  a dockeradmin user
+
+[root  ~] useradd dockeradmin
+passwd dockeradmin
+id dockeradmin
+usermod -aG docker dockeradmin
+vi /etc/ssh/sshd_config
+password auth=yes
+service sshd reload
+goto jenkins
+install publish over ssh
+ goto manage jenkins, config system
+click on add,
+dockerhost
+hostname: give private address
+username: dockeradmin
+click advance
+check use password
+password: give dockeradmin password
+click on test config....it show success
+apply it
+
+create new jenkins jobs and copy deployementtoserver
+delete old one
+click on post steps select send build artifacts over ssh
+sources file: target/*.war
+remove:target
+remote: //opt//docker
+apply it
+
+
+
+[root ~] cd /opt
+mkdir docker
+chown -R dockeradmin:dockeradmin docker
+create dockerfile inside docker folder
+chown -R dockeradmin:dockeradmin /opt/docker
+vi dockerfile
+FROM tomcat:latest
+RUN cp -r /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
+COPY ./*.war /usr/local/tomcat/webapps
+
+ 

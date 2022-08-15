@@ -1,5 +1,10 @@
 ---
-- hosts: slave
+-
+ become: true
+ hosts: Tomcat
+ remote_user: ec2-user
+ become_user: root
+ name: "playbook"
   tasks:
   - name: Stop the running container
     command: docker stop tomcat-container

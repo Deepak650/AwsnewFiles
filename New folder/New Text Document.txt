@@ -1,0 +1,8 @@
+sudo yum update
+
+sudo amazon-linux-extras install epel
+
+
+
+ansible all -i inventory -m ping
+
